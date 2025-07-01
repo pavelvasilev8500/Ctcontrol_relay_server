@@ -9,11 +9,11 @@ namespace Server.Logs
     static class Log
     {
 
-        public static void StartLog()
+        public static void StartLog(string str)
         {
 
         }
-        public static void AddLog()
+        public static void AddLog(string str)
         {
 
         }
