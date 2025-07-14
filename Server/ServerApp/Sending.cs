@@ -26,6 +26,7 @@ namespace Server.ServerApp
 
         public static void SendConfirmResult(string tag, string name, UdpReceiveResult result)
         {
+            ConsoleOutput.Output($"{DateTime.Now} Creating confirm connct result");
             string sender = "Server";
             byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new Share
             {
@@ -36,10 +37,13 @@ namespace Server.ServerApp
             }));
             try
             {
+                ConsoleOutput.Output($"{DateTime.Now} Sending confirm connct result");
                 ServerInit.Server.Send(buffer, buffer.Length, result.RemoteEndPoint.Address.ToString(), result.RemoteEndPoint.Port);
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Confirm connct result send to ip: {result.RemoteEndPoint.Address} port: {result.RemoteEndPoint.Port}");
             }
             catch (Exception ex)
             {
+                ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Error while sending: {ex.Message}");
             }
         }
 

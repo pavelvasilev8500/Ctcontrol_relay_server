@@ -12,18 +12,16 @@ namespace Server.ServerApp
     {
         public static async Task StartServer(string[] args)
         {
-            ClientListController.ListChanged += Clc_ListChanged;
+            //ClientListController.ListChanged += Clc_ListChanged;
             new ServerInit();
-            string start = $"[{DateTime.Now}] Server started at port: {ServerInit.ServerPort}";
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(start);
-            Log.AddLog(start);
-            Console.ResetColor();
+            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Server started at port: {ServerInit.ServerPort}");
+            ConsoleOutput.Output($"{DateTime.Now} Start listening for clients...");
             while (true)
             {
                 try
                 {
                     var RecivePacket = await ServerInit.Server.ReceiveAsync();
+                    ConsoleOutput.Output($"{DateTime.Now} Recive packet from {RecivePacket.RemoteEndPoint}");
                     if (RecivePacket.RemoteEndPoint != null)
                         Task.Run(() => TranslatorHandler(RecivePacket));
                 }
@@ -40,30 +38,25 @@ namespace Server.ServerApp
 
         private static void TranslatorHandler(UdpReceiveResult result)
         {
+            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Recive packet for processing");
             Share recivedPacket = null;
             try
             {
+                ConsoleOutput.Output($"{DateTime.Now} Trying read packet...");
                 recivedPacket = JsonConvert.DeserializeObject<Share>(Encoding.UTF8.GetString(result.Buffer));
-                Log.AddLog("Packet recived");
             }
             catch (Exception ex)
             {
-                string errorMessage = $"[{DateTime.Now}] Packet error! Check data!\nError: {ex.ToString()}";
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(errorMessage);
-                Log.AddLog(errorMessage);
+                ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Packet error! Check data!\nError: {ex.ToString()}");
             }
             if (recivedPacket != null)
             {
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Packet recived");
                 ClientManager.Manage(recivedPacket, result);
             }
             else
             {
-                string errorMessage = $"[{DateTime.Now}] Wrong sender!";
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(errorMessage);
-                Console.ResetColor();
-                Log.AddLog(errorMessage);
+                ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Wrong sender!");
             }
         }
     }

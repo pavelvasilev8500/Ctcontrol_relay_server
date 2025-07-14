@@ -10,8 +10,11 @@ namespace Server.Data
         public static void AddClient(string name, DictModel model)
         {
             var isSuccuss = ClientsList.Clients.TryAdd(name, model);
-            if (isSuccuss)
-                ListChanged?.Invoke();
+            //if (isSuccuss)
+            //    foreach (var o in ClientsList.Clients)
+            //        Console.WriteLine(o);
+            //if (isSuccuss)
+            //    ListChanged?.Invoke();
         }
 
         public static (bool, DictModel) DeleteClient(string name)
@@ -19,7 +22,9 @@ namespace Server.Data
             var isSuccess = ClientsList.Clients.TryRemove(name, out var rc);
             if(isSuccess)
             {
-                ListChanged?.Invoke();
+                //foreach (var o in ClientsList.Clients)
+                //    Console.WriteLine(o);
+                //ListChanged?.Invoke();
                 return (isSuccess, rc);
             }
             return (isSuccess, rc);

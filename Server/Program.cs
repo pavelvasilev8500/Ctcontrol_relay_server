@@ -1,4 +1,4 @@
-﻿using Server.Logs;
+﻿using Server.ServerApp;
 
 namespace Server
 {
@@ -6,7 +6,7 @@ namespace Server
     {
         static async Task Main(string[] args)
         {
-            Log.StartLog();
+            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Program strart");
             await ServerApp.Server.StartServer(args);
         }
     }
