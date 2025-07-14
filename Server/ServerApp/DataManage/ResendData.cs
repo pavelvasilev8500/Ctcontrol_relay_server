@@ -1,7 +1,10 @@
-﻿using Server.Data;
+﻿using Newtonsoft.Json;
+using Server.Data;
 using Server.Logs;
 using Server.Model;
+using System;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Server.ServerApp.DataManage
 {
@@ -22,12 +25,20 @@ namespace Server.ServerApp.DataManage
                         try
                         {
                             ConsoleOutput.Output(ConsoleColor.DarkCyan, $"{DateTime.Now} Sending from ip: {result.RemoteEndPoint.Address} Name: {packet.SenderName} to ip: {client.Value.Ip} Name: {packet.ReciverName}");
-                            Sending.Send(packet, client.Value.Ip.ToString(), client.Value.Port);
-                            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Send from ip: {result.RemoteEndPoint.Address} Name: {packet.SenderName} to ip: {client.Value.Ip} Name: {packet.ReciverName}");
-                            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {sender.Value.Ip} now is unavalable");
-                            sender.Value.IsAvalable = false;
-                            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {client.Value.Ip} now is unavalable");
-                            client.Value.IsAvalable = false;
+                            byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(packet));
+                            try
+                            {
+                                Enviroments.Server.Send(buffer, buffer.Length, client.Value.Ip.ToString(), client.Value.Port);
+                                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Send from ip: {result.RemoteEndPoint.Address} Name: {packet.SenderName} to ip: {client.Value.Ip} Name: {packet.ReciverName}");
+                                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {sender.Value.Ip} now is unavalable");
+                                sender.Value.IsAvalable = false;
+                                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {client.Value.Ip} now is unavalable");
+                                client.Value.IsAvalable = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Error {ex} while sening to ip: {client.Value.Ip} Name: {packet.ReciverName} ");
+                            }
                             //ClientListController.UpdateClient();
                         }
                         catch (Exception)
@@ -46,15 +57,22 @@ namespace Server.ServerApp.DataManage
             else
             {
                 ConsoleOutput.Output(ConsoleColor.DarkCyan, $"{DateTime.Now} Preparing answer that client not registered...");
-                string senderName = "Server";
-                Sending.Send(new Share
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new Share
                 {
-                    SenderName = senderName,
+                    SenderName = "Server",
                     ReciverName = packet.SenderName,
                     Data = "Not Register",
                     Tag = packet.Tag
-                }, result.RemoteEndPoint.Address.ToString(), result.RemoteEndPoint.Port);
-                ConsoleOutput.Output(ConsoleColor.DarkCyan, $"{DateTime.Now} Send answer that client not registered");
+                }));
+                try
+                {
+                    Enviroments.Server.Send(buffer, buffer.Length, result.RemoteEndPoint.Address.ToString(), result.RemoteEndPoint.Port);
+                    ConsoleOutput.Output(ConsoleColor.DarkCyan, $"{DateTime.Now} Send answer that client not registered to ip: {result.RemoteEndPoint.Address.ToString()} Name: {result.RemoteEndPoint.Port}");
+                }
+                catch (Exception ex)
+                {
+                    ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Error {ex} while sening to ip: {result.RemoteEndPoint.Address.ToString()} Name: {result.RemoteEndPoint.Port} ");
+                }
             }
         }
     }

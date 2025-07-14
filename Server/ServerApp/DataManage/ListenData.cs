@@ -1,40 +1,39 @@
-﻿using Server.Logs;
+﻿using Newtonsoft.Json;
+using Server.Data;
 using Server.Model;
+using Server.ServerApp.ClientManage;
 using System.Net.Sockets;
 using System.Text;
-using Newtonsoft.Json;
-using Server.ServerApp.Init;
-using Server.Data;
 
-namespace Server.ServerApp
+namespace Server.ServerApp.DataManage
 {
-    static class Server
+    static class ListenData
     {
-        public static async Task StartServer(string[] args)
+        private static UdpReceiveResult _recivePacket;
+        public static async Task StartListen()
         {
             //ClientListController.ListChanged += Clc_ListChanged;
-            new ServerInit();
-            ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Server started at port: {ServerInit.ServerPort}");
             ConsoleOutput.Output($"{DateTime.Now} Start listening for clients...");
             while (true)
             {
                 try
                 {
-                    var RecivePacket = await ServerInit.Server.ReceiveAsync();
-                    ConsoleOutput.Output($"{DateTime.Now} Recive packet from {RecivePacket.RemoteEndPoint}");
-                    if (RecivePacket.RemoteEndPoint != null)
-                        Task.Run(() => TranslatorHandler(RecivePacket));
+                    _recivePacket = await Enviroments.Server.ReceiveAsync();
+                    ConsoleOutput.Output($"{DateTime.Now} Recive packet from {_recivePacket.RemoteEndPoint}");
+                    if (_recivePacket.RemoteEndPoint != null)
+                        Task.Run(() => TranslatorHandler(_recivePacket));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Error while recive packet {ex}");
                 }
             }
         }
 
-        private static void Clc_ListChanged()
-        {
-            Sending.SendClientList();
-        }
+        //private static void Clc_ListChanged()
+        //{
+        //    Sending.SendClientList();
+        //}
 
         private static void TranslatorHandler(UdpReceiveResult result)
         {

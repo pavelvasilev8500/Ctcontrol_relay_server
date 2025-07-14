@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Server.Logs;
+using Server.Data;
 using Server.Model;
 using System.Net;
 using System.Net.Sockets;
@@ -8,10 +8,8 @@ namespace Server.ServerApp.Init
 {
     class ServerInit
     {
-        public static UdpClient Server;
-        public static string ServerPort = "5555";
-        private static readonly string _path = Path.Combine(AppContext.BaseDirectory, "config.json");
-        public ServerInit()
+        public static readonly string _path = Path.Combine(AppContext.BaseDirectory, "config.json");
+        public bool StartServerInit()
         {
             ConsoleOutput.Output(new string[] { $"{DateTime.Now} Server Init", $"{DateTime.Now} Load settings..." });
             if(!File.Exists(_path))
@@ -25,15 +23,30 @@ namespace Server.ServerApp.Init
                 File.AppendAllText(_path, setings);
                 ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Settings file created, settings loaded");
             }
+            else
+            {
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Load settings from file");
+                var config = JsonConvert.DeserializeObject<SettingsModel>(File.ReadAllText(_path));
+                Enviroments.ServerPort = config.Port.ToString();
+            }
             //var port = Environment.GetEnvironmentVariable("SERVER_PORT");
             //if (port == null)
             //{
-            //    var config = JsonConvert.DeserializeObject<SettingsModel>(File.ReadAllText(_path));
-            //    ServerPort = config.Port.ToString();
             //}
             //else
             //    ServerPort = port; 
-            Server = new UdpClient(new IPEndPoint(IPAddress.Any, int.Parse(ServerPort)));
+            try
+            {
+                Enviroments.Server = new UdpClient(new IPEndPoint(IPAddress.Any, int.Parse(Enviroments.ServerPort)));
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Server started at port: {Enviroments.ServerPort}");
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Server start failed at port: {Enviroments.ServerPort}");
+                return false;
+            }
         }
     }
 }

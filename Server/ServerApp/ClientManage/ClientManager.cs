@@ -1,9 +1,8 @@
 ﻿using Server.Model;
-using Server.ServerApp.ClientManage;
 using Server.ServerApp.DataManage;
 using System.Net.Sockets;
 
-namespace Server.ServerApp
+namespace Server.ServerApp.ClientManage
 {
     static class ClientManager
     {
@@ -16,7 +15,7 @@ namespace Server.ServerApp
                     ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [Connect] detected");
                     var client = UserController.Add(packet, result);
                     if (client.Item1)
-                        Sending.SendConfirmResult(packet.Tag, client.Item2, client.Item3);
+                        SendData.SendConfirmResult(packet.Tag, client.Item2, client.Item3);
                     break;
                 case "Disconnect":
                     ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [Disconnect] detected");
@@ -25,6 +24,8 @@ namespace Server.ServerApp
                 case "Data":
                     ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [Data] detected");
                     ResendData.Resend(packet, result);
+                    break;
+                case "pong":
                     break;
                 case "":
                     ConsoleOutput.Output(ConsoleColor.Red, $"{DateTime.Now} Empty tag");

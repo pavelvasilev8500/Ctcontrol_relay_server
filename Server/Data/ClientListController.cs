@@ -1,4 +1,5 @@
 ﻿using Server.Model;
+using Server.ServerApp;
 
 namespace Server.Data
 {
@@ -10,9 +11,12 @@ namespace Server.Data
         public static void AddClient(string name, DictModel model)
         {
             var isSuccuss = ClientsList.Clients.TryAdd(name, model);
-            //if (isSuccuss)
-            //    foreach (var o in ClientsList.Clients)
-            //        Console.WriteLine(o);
+            if (isSuccuss)
+            {
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {name} added");
+                foreach (var o in ClientsList.Clients)
+                    ConsoleOutput.Output(ConsoleColor.DarkMagenta, $"  |{o.Key}");
+            }
             //if (isSuccuss)
             //    ListChanged?.Invoke();
         }
@@ -22,8 +26,9 @@ namespace Server.Data
             var isSuccess = ClientsList.Clients.TryRemove(name, out var rc);
             if(isSuccess)
             {
-                //foreach (var o in ClientsList.Clients)
-                //    Console.WriteLine(o);
+                ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} {name} deleted");
+                foreach (var o in ClientsList.Clients)
+                    ConsoleOutput.Output(ConsoleColor.DarkMagenta, $"  |{o.Key}");
                 //ListChanged?.Invoke();
                 return (isSuccess, rc);
             }
