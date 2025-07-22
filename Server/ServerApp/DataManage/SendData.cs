@@ -16,7 +16,7 @@ namespace Server.ServerApp.DataManage
             {
                 SenderName = sender,
                 ReciverName = name,
-                Data = "Ok",
+                Data = $"Ok, welcome to server, {name}",
                 Tag = tag
             }));
             try
