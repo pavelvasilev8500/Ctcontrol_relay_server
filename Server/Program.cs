@@ -33,8 +33,8 @@ namespace Server
                         {
                             SenderName = "Server",
                             ReciverName = o.Key,
-                            Tag = "ping",
-                            Data = "ping"
+                            Tag = "pong",
+                            Data = "pong"
                         };
                         byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(package));
                         try
@@ -45,11 +45,11 @@ namespace Server
                         {
                         }
                     }
-                    Thread.Sleep(25000);
+                    Thread.Sleep(10000);
                 }
             });
-            ping.Name = "Ping";
-            ping.Start();
+            ping.Name = "Pong";
+            //ping.Start();
         }
     }
 }

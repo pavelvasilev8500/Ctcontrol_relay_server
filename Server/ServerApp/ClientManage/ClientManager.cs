@@ -25,8 +25,8 @@ namespace Server.ServerApp.ClientManage
                     ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [Data] detected");
                     ResendData.Resend(packet, result);
                     break;
-                case "pong":
-                    ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [pong] detected");
+                case "ping":
+                    ConsoleOutput.Output(ConsoleColor.Green, $"{DateTime.Now} Tag [ping] detected");
 
                     break;
                 case "":

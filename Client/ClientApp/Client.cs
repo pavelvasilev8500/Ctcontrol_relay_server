@@ -34,7 +34,7 @@ namespace Client.ClientApp
         private static void Control()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
-            while (!cts.IsCancellationRequested)
+            while (!_cts.IsCancellationRequested)
             {
                 Console.WriteLine("1 - register");
                 Console.WriteLine("2 - send data");
